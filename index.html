@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feira de Benefícios Online · iFood 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#E8002D;
+  --red-d:#b5001f;
+  --red-l:#fff0f2;
+  --ink:#111;
+  --bg:#f7f6f4;
+  --surface:#fff;
+  --border:1px solid #e8e6e0;
+  --border-s:1px solid #d4d1ca;
+  --muted:#777;
+  --radius:14px;
+  --radius-s:8px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ===== LOGIN SCREEN ===== */
+#screen-login{align-items:center;justify-content:center;padding:24px;background:var(--ink)}
+.login-box{background:#fff;border-radius:20px;padding:40px 36px;width:100%;max-width:420px}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.login-logo-dot{width:28px;height:28px;background:var(--red);border-radius:50%}
+.login-logo-text{font-size:14px;font-weight:600;letter-spacing:-.01em}
+.login-eyebrow{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.login-title{font-size:28px;font-weight:600;line-height:1.15;margin-bottom:6px}
+.login-title em{color:var(--red);font-style:normal}
+.login-sub{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.6}
+.field-label{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.field-input{width:100%;padding:12px 14px;border:var(--border-s);border-radius:var(--radius-s);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border .15s}
+.field-input:focus{border-color:var(--red)}
+.login-btn{width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:var(--radius-s);font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:14px;transition:background .15s}
+.login-btn:hover{background:var(--red-d)}
+.login-btn:disabled{background:#ccc;cursor:default}
+.login-error{font-size:13px;color:#c00;margin-top:8px;display:none}
+.login-info{font-size:12px;color:var(--muted);margin-top:16px;text-align:center;line-height:1.5}
+
+/* ===== MAIN SCREEN ===== */
+#screen-main{background:var(--bg)}
+
+/* TOP BAR */
+.topbar{background:var(--ink);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-brand{display:flex;align-items:center;gap:8px;color:#fff}
+.topbar-dot{width:18px;height:18px;background:var(--red);border-radius:50%;flex-shrink:0}
+.topbar-name{font-size:13px;font-weight:500;color:#fff}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-user{font-size:12px;color:rgba(255,255,255,.5);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topbar-stamps{background:var(--red);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+
+/* HERO */
+.hero{background:var(--red);padding:28px 20px 24px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;right:-30px;top:-30px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06)}
+.hero::after{content:'';position:absolute;right:80px;bottom:-20px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.04)}
+.hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:6px}
+.hero h1{font-size:26px;font-weight:600;color:#fff;line-height:1.2;margin-bottom:4px}
+.hero-welcome{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:16px}
+.hero-meta{display:flex;gap:16px;flex-wrap:wrap}
+.hm{font-size:12px;color:rgba(255,255,255,.55)}
+.hm strong{display:block;font-size:14px;color:#fff;font-weight:500}
+
+/* PROGRESS BAR */
+.progress-wrap{background:#fff;padding:14px 20px;border-bottom:var(--border)}
+.progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.progress-label{font-size:13px;font-weight:500}
+.progress-pct{font-size:13px;color:var(--muted)}
+.progress-bar{height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:var(--red);border-radius:4px;transition:width .5s}
+.progress-hint{font-size:11px;color:var(--muted);margin-top:5px}
+
+/* TABS */
+.tabs-wrap{background:#fff;padding:0 20px;border-bottom:var(--border);display:flex;gap:0;overflow-x:auto}
+.tab{padding:12px 16px;font-size:13px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--red);border-bottom-color:var(--red)}
+
+/* CONTENT */
+.content{padding:16px 16px 40px;max-width:760px;margin:0 auto;width:100%}
+
+/* STAND CARD */
+.stands-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.stand-card{background:var(--surface);border:var(--border);border-radius:var(--radius);padding:14px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.stand-card:hover{border-color:var(--red);transform:translateY(-1px)}
+.stand-card.done{border-color:var(--red)}
+.stand-card.done::after{content:'✓';position:absolute;top:8px;right:10px;width:20px;height:20px;background:var(--red);border-radius:50%;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;text-align:center;line-height:20px}
+.sc-tag{font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;display:inline-block;margin-bottom:8px}
+.tag-saude{background:#fff0f2;color:#b5001f}
+.tag-bem-estar{background:#e3f2fd;color:#0d47a1}
+.tag-financeiro{background:#e8f5e9;color:#1b5e20}
+.tag-juridico{background:#f3e5f5;color:#4a148c}
+.tag-outros{background:#fff8e1;color:#e65100}
+.sc-icon{font-size:26px;margin-bottom:6px;display:block}
+.sc-name{font-size:12px;font-weight:600;margin-bottom:3px;line-height:1.3}
+.sc-teaser{font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:8px}
+.sc-cta{font-size:11px;color:var(--red);font-weight:600}
+.sc-cta.done-cta{color:#2e7d32}
+
+/* PASSPORT */
+.passport-card{background:var(--surface);border:var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px}
+.pp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.pp-title{font-size:14px;font-weight:600}
+.pp-score{background:var(--red-l);color:var(--red);font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px}
+.stamps-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stamp{border:var(--border);border-radius:10px;padding:10px 4px;text-align:center;cursor:pointer;transition:all .15s}
+.stamp:hover{border-color:var(--red)}
+.stamp.done{border:1.5px solid var(--red);background:var(--red-l)}
+.stamp-ico{font-size:20px;margin-bottom:4px;display:block}
+.stamp-lbl{font-size:9px;color:var(--muted);line-height:1.3}
+.stamp.done .stamp-lbl{color:var(--red);font-weight:600}
+.prize-box{background:var(--red-l);border:1.5px solid var(--red);border-radius:var(--radius);padding:18px 20px;text-align:center;display:none}
+.prize-box.show{display:block}
+
+/* PERGUNTAS */
+.p-box{background:var(--surface);border:var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px}
+.p-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px}
+.p-sel{width:100%;padding:10px 12px;border:var(--border-s);border-radius:var(--radius-s);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:8px;background:var(--bg);color:var(--ink)}
+.p-sel:focus{border-color:var(--red)}
+.p-area{width:100%;padding:10px 12px;border:var(--border-s);border-radius:var(--radius-s);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;min-height:80px;resize:vertical;background:var(--bg);color:var(--ink);margin-bottom:8px}
+.p-area:focus{border-color:var(--red)}
+.p-btn{padding:9px 20px;background:var(--red);color:#fff;border:none;border-radius:var(--radius-s);font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+.p-btn:disabled{background:#ccc;cursor:default}
+.q-item{padding:10px 0;border-bottom:var(--border);font-size:13px;line-height:1.5}
+.q-item:last-child{border-bottom:none}
+.q-meta{font-size:11px;color:var(--muted);margin-bottom:2px;display:flex;gap:8px;align-items:center}
+.q-badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600}
+.badge-pendente{background:#fff8e1;color:#e65100}
+.badge-respondida{background:#e8f5e9;color:#1b5e20}
+.q-answer{margin-top:6px;padding:8px 10px;background:#f0fdf4;border-left:3px solid #2e7d32;border-radius:0 6px 6px 0;font-size:12px;color:#1b5e20;line-height:1.5}
+
+/* RANKING */
+.rank-card{background:var(--surface);border:var(--border);border-radius:var(--radius);padding:16px 18px}
+.rank-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:var(--border)}
+.rank-row:last-child{border-bottom:none}
+.rank-pos{width:26px;text-align:center;font-size:15px;flex-shrink:0}
+.rank-av{width:32px;height:32px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#666;flex-shrink:0}
+.rank-av.me{background:var(--red-l);color:var(--red)}
+.rank-name{flex:1;font-size:13px;font-weight:500}
+.rank-name.me{color:var(--red)}
+.rank-st{font-size:12px;color:var(--muted);flex-shrink:0}
+.rank-bar-w{width:70px;height:5px;background:#eee;border-radius:4px;overflow:hidden;flex-shrink:0}
+.rank-bar-f{height:100%;background:var(--red);border-radius:4px}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-end;justify-content:center;padding:0}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:520px;max-height:88vh;overflow-y:auto}
+.modal-head{padding:20px 20px 12px;display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0;background:var(--surface);border-bottom:var(--border);z-index:1}
+.modal-x{width:28px;height:28px;border-radius:50%;border:var(--border);background:none;cursor:pointer;font-size:14px;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-body{padding:16px 20px 28px}
+.m-section{margin-bottom:18px}
+.m-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+.m-text{font-size:13px;line-height:1.6;color:var(--ink)}
+.q-opt{border:var(--border-s);border-radius:var(--radius-s);padding:10px 14px;margin-bottom:6px;cursor:pointer;font-size:13px;transition:all .15s}
+.q-opt:hover{border-color:var(--red);background:var(--red-l)}
+.q-opt.selected-c{border-color:#2e7d32;background:#e8f5e9;color:#1b5e20;font-weight:500}
+.q-opt.selected-w{border-color:#c62828;background:#ffebee;color:#c62828}
+.q-feedback{font-size:12px;padding:8px 12px;border-radius:8px;margin-top:8px;line-height:1.5;display:none}
+.q-feedback.ok{background:#e8f5e9;color:#1b5e20;display:block}
+.q-feedback.err{background:#ffebee;color:#c62828;display:block}
+.coll-btn{width:100%;padding:12px;background:var(--red);color:#fff;border:none;border-radius:var(--radius-s);font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:10px;transition:background .15s}
+.coll-btn:hover{background:var(--red-d)}
+.coll-btn:disabled{background:#e8f5e9;color:#2e7d32;cursor:default}
+.ask-link{display:block;text-align:center;margin-top:10px;font-size:12px;color:var(--red);cursor:pointer;font-weight:500}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 22px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:300;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.toast.show{opacity:1}
+
+/* USER INFO CARD */
+.user-info-card{background:var(--surface);border:var(--border);border-radius:var(--radius);padding:14px 18px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.ui-avatar{width:40px;height:40px;border-radius:50%;background:var(--red-l);color:var(--red);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ui-nome{font-size:14px;font-weight:600;margin-bottom:2px}
+.ui-dept{font-size:12px;color:var(--muted)}
+
+/* SECTION hidden */
+.tab-section{display:none}
+.tab-section.active{display:block}
+
+@media(max-width:420px){
+  .stamps-grid{grid-template-columns:repeat(4,1fr)}
+  .hero h1{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== TELA LOGIN ===== -->
+<div id="screen-login" class="screen active">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-dot"></div>
+      <div class="login-logo-text">iFood People · Benefícios 2026</div>
+    </div>
+    <div class="login-eyebrow">Feira Online · 16 de junho</div>
+    <h2 class="login-title">Explore a Feira de<br><em>Benefícios</em></h2>
+    <p class="login-sub">Entre com seu e-mail corporativo para acessar a experiência, coletar stamps e participar dos sorteios.</p>
+    <div class="field-label">Seu e-mail corporativo</div>
+    <input class="field-input" type="email" id="login-email" placeholder="seunome@ifood.com.br" autocomplete="email">
+    <div class="login-error" id="login-error">E-mail não encontrado na base iFood. Verifique e tente novamente.</div>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Entrar na feira →</button>
+    <p class="login-info">Acesso disponível das 09h às 18h do dia 16/06.<br>Apenas colaboradores ativos iFood.</p>
+  </div>
+</div>
+
+<!-- ===== TELA PRINCIPAL ===== -->
+<div id="screen-main" class="screen">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-dot"></div>
+      <span class="topbar-name">Feira de Benefícios 2026</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-user" id="tb-user"></span>
+      <span class="topbar-stamps" id="tb-stamps">0/10</span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">16 de junho de 2026 · ao vivo</div>
+    <h1>Olá, <span id="hero-nome">FoodLover</span>! 👋</h1>
+    <div class="hero-welcome" id="hero-dept"></div>
+    <div class="hero-meta">
+      <div class="hm"><strong id="meta-stamps">0/10</strong>stamps coletados</div>
+      <div class="hm"><strong>17h00</strong>sorteios ao vivo</div>
+      <div class="hm"><strong>09h–18h</strong>evento hoje</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="progress-label">Seu passport da feira</span>
+      <span class="progress-pct" id="prog-pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="progress-hint" id="prog-hint">Visite os stands, responda o quiz e colete seu stamp!</div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-wrap">
+    <div class="tab active" onclick="showTab('stands')">🏪 Stands</div>
+    <div class="tab" onclick="showTab('passport')">🎫 Passport</div>
+    <div class="tab" onclick="showTab('perguntas')">💬 Perguntas</div>
+    <div class="tab" onclick="showTab('ranking')">🏆 Ranking</div>
+  </div>
+
+  <!-- CONTEÚDO -->
+  <div class="content">
+
+    <!-- STANDS -->
+    <div id="tab-stands" class="tab-section active">
+      <div class="stands-grid" id="stands-grid"></div>
+    </div>
+
+    <!-- PASSPORT -->
+    <div id="tab-passport" class="tab-section">
+      <div class="passport-card">
+        <div class="pp-header">
+          <div class="pp-title">🎫 Meu Passport</div>
+          <div class="pp-score" id="pp-score">0 de 10 stamps</div>
+        </div>
+        <div class="stamps-grid" id="stamps-mini"></div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+          <div class="progress-bar" style="flex:1;height:6px"><div class="progress-fill" id="pp-fill" style="width:0%"></div></div>
+          <span style="font-size:12px;color:var(--muted)" id="pp-pct">0%</span>
+        </div>
+      </div>
+      <div class="prize-box" id="prize-box">
+        <div style="font-size:32px;margin-bottom:8px">🏆</div>
+        <div style="font-size:15px;font-weight:600;color:var(--red)">Passport completo! Você está no sorteio do prêmio âncora.</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px">Resultado ao vivo às 17h. Fique ligado!</div>
+      </div>
+    </div>
+
+    <!-- PERGUNTAS -->
+    <div id="tab-perguntas" class="tab-section">
+      <div class="p-box">
+        <div class="p-label">Enviar pergunta ao vivo</div>
+        <select class="p-sel" id="p-sel">
+          <option value="">Selecione o parceiro...</option>
+          <option>Bradesco Saúde</option>
+          <option>Wellhub</option>
+          <option>Stay (Previdência)</option>
+          <option>Leggal</option>
+          <option>Meu Pet Club</option>
+          <option>Travel Cash</option>
+          <option>New Vallue</option>
+          <option>Avus</option>
+          <option>Bradesco Odonto</option>
+          <option>Vida Link</option>
+          <option>Zurich</option>
+          <option>iFood Benefícios / Dúvidas gerais</option>
+        </select>
+        <textarea class="p-area" id="p-area" placeholder="Escreva sua dúvida..."></textarea>
+        <button class="p-btn" onclick="enviarPergunta()">Enviar pergunta</button>
+      </div>
+      <div class="p-box">
+        <div class="p-label">Perguntas enviadas</div>
+        <div id="q-list"><div style="font-size:13px;color:var(--muted)">Nenhuma pergunta ainda. Seja o primeiro!</div></div>
+      </div>
+    </div>
+
+    <!-- RANKING -->
+    <div id="tab-ranking" class="tab-section">
+      <div class="rank-card">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px">Top FoodLovers · hoje</div>
+        <div id="rank-list"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL STAND -->
+<div class="modal-bg" id="modal-bg" onclick="closeMBg(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div id="m-tag"></div>
+        <div style="font-size:16px;font-weight:600;margin-top:2px" id="m-title"></div>
+      </div>
+      <button class="modal-x" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="m-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- HCM BASE: carregada externamente -->
+<script src="hcm_base.js"></script>
+
+<script>
+/* ── DADOS DO USUÁRIO ── */
+let USER = null;
+
+/* ── STANDS ── */
+const STANDS = [
+  {id:'bradesco',name:'Bradesco Saúde',icon:'🏥',tag:'saude',tagLabel:'Saúde',
+   teaser:'Entenda a coparticipação, conheça a rede e tire dúvidas sobre o plano.',
+   desc:'A maior dúvida do FoodLover é a coparticipação. Aqui você entende de vez como funciona, quais exames têm cobertura total e como usar a rede com inteligência.',
+   quiz:{q:'O que é coparticipação no plano de saúde?',opts:['Taxa paga em cada consulta/exame','Valor mensal debitado da folha','Limite anual de reembolso','Número de dependentes incluídos'],c:0,exp:'Coparticipação é a parte que você paga por cada uso do plano. Saber disso ajuda a escolher o plano certo para o seu perfil de uso!'},
+   sorteio:'Health Check Kit + R$100 em crédito de saúde'},
+  {id:'wellhub',name:'Wellhub',icon:'💪',tag:'bem-estar',tagLabel:'Bem-estar',
+   teaser:'Academias e apps perto de você. Upgrade disponível só hoje!',
+   desc:'Descubra academias, estúdios e apps de bem-estar na sua região. Aderir ou fazer upgrade hoje dá direito ao sorteio de um Garmin Forerunner 55.',
+   quiz:{q:'Qual item NÃO está coberto pelo Wellhub?',opts:['Academias de musculação','Apps de meditação','Plano odontológico','Aulas de yoga'],c:2,exp:'O Wellhub cobre academia, apps fitness e atividades físicas. O plano odontológico é o Bradesco Odonto — são benefícios separados!'},
+   sorteio:'Garmin Forerunner 55'},
+  {id:'stay',name:'Stay Previdência',icon:'💰',tag:'financeiro',tagLabel:'Financeiro',
+   teaser:'Simule sua previdência. Veja quanto já tem guardado para o futuro.',
+   desc:'A previdência é o benefício mais subutilizado. Aqui você faz um diagnóstico financeiro rápido e entende o quanto o iFood contribui junto com você.',
+   quiz:{q:'Qual a maior vantagem da previdência corporativa?',opts:['Rendimento garantido de 20% a.a.','Matching: o iFood contribui junto com você','Sem imposto de renda jamais','Saque livre todo mês'],c:1,exp:'O matching é o grande diferencial — a empresa contribui junto. É dinheiro extra que você simplesmente não teria fora do iFood!'},
+   sorteio:'R$200 na conta de previdência + Kit educação financeira'},
+  {id:'leggal',name:'Leggal',icon:'⚖️',tag:'juridico',tagLabel:'Jurídico',
+   teaser:'Consultoria jurídica incluída. Saiba quando e como usar.',
+   desc:'Muita gente elege e nunca usa. Aqui você descobre exatamente em quais situações o Leggal resolve seu problema — e sai com o perfil jurídico feito.',
+   quiz:{q:'Para qual situação o Leggal NÃO atende?',opts:['Revisão de contratos de aluguel','Consultoria em divórcio','Defesa criminal ativa em tribunal','Orientação em compra de imóvel'],c:2,exp:'O Leggal cobre orientação e consultoria preventiva. Defesa criminal em julgamento exige contratação separada de advogado.'},
+   sorteio:'Cafeteira Nespresso Vertuo'},
+  {id:'petclub',name:'Meu Pet Club',icon:'🐾',tag:'outros',tagLabel:'Pet',
+   teaser:'Saúde e bem-estar para seu pet. Conheça coberturas e novidades.',
+   desc:'Conheça os planos, esclareça dúvidas de cobertura e descubra o novo Pet Day com Kintal e Purina. Sorteio de aula de adestramento para o seu pet!',
+   quiz:{q:'Qual cobertura está no plano básico do Meu Pet Club?',opts:['Cirurgias eletivas ilimitadas','Consultas veterinárias com desconto','Internação por tempo indeterminado','Tratamento dentário completo'],c:1,exp:'O básico já inclui desconto em consultas. Para cirurgias e internações amplas, existem planos Premium — vale checar!'},
+   sorteio:'Aula de adestramento + Kit petfood Purina'},
+  {id:'travel',name:'Travel Cash',icon:'✈️',tag:'outros',tagLabel:'Viagem',
+   teaser:'R$50 em crédito para quem aderir hoje. Voe com mais!',
+   desc:'Quem ainda não aderiu ganha crédito dobrado no primeiro mês. Quem já tem, pode renovar e garantir benefícios exclusivos do dia.',
+   quiz:{q:'Como usar o benefício Travel Cash?',opts:['Só em voos internacionais','Passagens, hotel e pacotes na plataforma','Apenas hotéis nacionais','Só viagens corporativas'],c:1,exp:'O Travel Cash é sua carteira digital de viagens — passagens, hotéis e pacotes completos. Use como quiser na plataforma parceira!'},
+   sorteio:'R$250 em créditos de viagem'},
+  {id:'newvallue',name:'New Vallue',icon:'🛍️',tag:'financeiro',tagLabel:'Benefícios flex',
+   teaser:'Use seus créditos flex com mais inteligência. Tema Copa 2026!',
+   desc:'Entenda como alocar seus créditos flex de forma inteligente. A ativação traz o tema Copa — sorteio de camiseta oficial CBF e Gift Cards!',
+   quiz:{q:'O que é o benefício flexível New Vallue?',opts:['Plano de saúde alternativo','Cartão com créditos para categorias à sua escolha','Seguro de vida adicional','Vale transporte digital'],c:1,exp:'New Vallue é sua carteira flex — você decide como distribuir os créditos entre alimentação, cultura, educação e muito mais!'},
+   sorteio:'Gift Card R$100 + Camiseta oficial da Copa CBF'},
+  {id:'avus',name:'Avus Farmácia',icon:'💊',tag:'saude',tagLabel:'Saúde',
+   teaser:'Novo parceiro! Farmácia com desconto e serviços farmacêuticos.',
+   desc:'Mais que desconto em remédio: farmacêuticos fazem medição de pressão e glicemia no local. Conheça o produto novo de 2026!',
+   quiz:{q:'Além de medicamentos, o Avus oferece:',opts:['Só desconto em remédios','Medição de pressão e curva glicêmica','Consultas médicas presenciais','Internação hospitalar'],c:1,exp:'O Avus vai além da farmácia: farmacêuticos fazem serviços como medição de pressão e glicemia — é saúde preventiva de verdade!'},
+   sorteio:'Kit farmácia + Chaveiro álcool gel'},
+  {id:'odonto',name:'Bradesco Odonto',icon:'🦷',tag:'saude',tagLabel:'Saúde',
+   teaser:'Plano renovado com coberturas ampliadas para 2026.',
+   desc:'O novo Bradesco Odonto traz cobertura expandida — procedimentos que antes não estavam incluídos. Vale revisar seu plano atual e entender o que mudou.',
+   quiz:{q:'O que mudou no Bradesco Odonto 2026?',opts:['Retirou cobertura de limpeza','Ampliou cobertura para procedimentos complexos','Substituiu o plano de saúde','Exige carência de 2 anos'],c:1,exp:'O novo plano 2026 ampliou a cobertura significativamente, incluindo procedimentos antes não cobertos. Verifique se seu plano atual ainda é o ideal!'},
+   sorteio:'Brinde surpresa + Sorteio para quem responder o quiz'},
+  {id:'duvidas',name:'Dúvidas Gerais',icon:'❓',tag:'outros',tagLabel:'Geral',
+   teaser:'Eleição, carteira flex, idiomas, dependentes. Tire tudo aqui.',
+   desc:'Equipe iFood People tira dúvidas de eleição, idiomas, dependentes, carteira flex e qualquer outra questão que não seja de parceiro específico.',
+   quiz:{q:'Até quando posso alterar minha eleição de benefícios?',opts:['Só no dia 16/06','Durante todo o período da Eleição 2026','A qualquer momento do ano','Apenas via chamado na Alli'],c:1,exp:'O período de eleição tem data definida — use os dias disponíveis para revisar suas escolhas. Fora do período, mudanças só em eventos de vida!'},
+   sorteio:'Garrafa ou copo térmico Lockton'},
+];
+
+/* ── ESTADO ── */
+let collected = new Set();
+let questions = [];
+const fakeRank = [
+  {n:'Ana F.',s:10,av:'AF'},{n:'Lucas M.',s:9,av:'LM'},
+  {n:'Camila R.',s:8,av:'CR'},{n:'Bruno T.',s:7,av:'BT'},
+  {n:'Pedro A.',s:5,av:'PA'}
+];
+let currentStand = null;
+let quizDone = false;
+
+/* ── GOOGLE SHEETS CONFIG ── */
+// Para ativar: cole a URL do seu Apps Script Web App abaixo
+const SHEETS_URL = ''; // ex: 'https://script.google.com/macros/s/SEU_ID/exec'
+
+async function logToSheets(type, data) {
+  if (!SHEETS_URL || !USER) return;
+  try {
+    fetch(SHEETS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        type,
+        timestamp: new Date().toISOString(),
+        email: USER.email,
+        nome: USER.nome,
+        dept: USER.dept,
+        local: USER.local,
+        nivel: USER.nivel,
+        ...data
+      })
+    });
+  } catch(e){}
+}
+
+/* ── LOGIN ── */
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const err = document.getElementById('login-error');
+  err.style.display = 'none';
+
+  if (!email || !email.includes('@')) {
+    err.textContent = 'Digite um e-mail válido.';
+    err.style.display = 'block';
+    return;
+  }
+
+  // Lookup na base HCM
+  const found = typeof HCM !== 'undefined' ? HCM[email] : null;
+  if (!found) {
+    err.textContent = 'E-mail não encontrado na base iFood. Verifique e tente novamente.';
+    err.style.display = 'block';
+    return;
+  }
+
+  USER = {
+    email,
+    nome: found[0],
+    dept: found[1],
+    local: found[2],
+    nivel: found[3],
+    area: found[4]
+  };
+
+  // Carrega estado salvo (localStorage por email)
+  const saved = localStorage.getItem('feira26_' + email);
+  if (saved) {
+    const d = JSON.parse(saved);
+    collected = new Set(d.collected || []);
+    questions = d.questions || [];
+  }
+
+  logToSheets('login', {});
+  initMain();
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('screen-main').classList.add('active');
+}
+
+document.getElementById('login-email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+/* ── INIT MAIN ── */
+function initMain() {
+  const primeiroNome = USER.nome.split(' ')[0];
+  document.getElementById('hero-nome').textContent = primeiroNome;
+  document.getElementById('hero-dept').textContent = USER.dept || USER.area || '';
+  document.getElementById('tb-user').textContent = primeiroNome;
+  buildStandsGrid();
+  buildStampsMini();
+  updateProgress();
+  renderQuestions();
+  updateRanking();
+}
+
+/* ── SAVE STATE ── */
+function saveState() {
+  if (!USER) return;
+  localStorage.setItem('feira26_' + USER.email, JSON.stringify({
+    collected: [...collected],
+    questions
+  }));
+}
+
+/* ── STANDS ── */
+function buildStandsGrid() {
+  document.getElementById('stands-grid').innerHTML = STANDS.map(s => `
+    <div class="stand-card ${collected.has(s.id)?'done':''}" onclick="openStand('${s.id}')">
+      <div class="sc-tag tag-${s.tag}">${s.tagLabel}</div>
+      <span class="sc-icon">${s.icon}</span>
+      <div class="sc-name">${s.name}</div>
+      <div class="sc-teaser">${s.teaser}</div>
+      <div class="sc-cta ${collected.has(s.id)?'done-cta':''}">${collected.has(s.id)?'✓ Stamp coletado':'Visitar stand →'}</div>
+    </div>`).join('');
+}
+
+function buildStampsMini() {
+  document.getElementById('stamps-mini').innerHTML = STANDS.map(s => `
+    <div class="stamp ${collected.has(s.id)?'done':''}" onclick="openStand('${s.id}')">
+      <span class="stamp-ico">${s.icon}</span>
+      <div class="stamp-lbl">${s.name.split(' ')[0]}</div>
+    </div>`).join('');
+}
+
+/* ── PROGRESS ── */
+function updateProgress() {
+  const n = collected.size, total = STANDS.length;
+  const pct = Math.round(n / total * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('pp-fill').style.width = pct + '%';
+  document.getElementById('pp-pct').textContent = pct + '%';
+  document.getElementById('pp-score').textContent = n + ' de ' + total + ' stamps';
+  document.getElementById('meta-stamps').textContent = n + '/' + total + ' ';
+  document.getElementById('tb-stamps').textContent = n + '/' + total;
+  document.getElementById('prog-hint').textContent = n === total
+    ? '🎉 Passport completo! Você está no sorteio do prêmio âncora!'
+    : 'Faltam ' + (total - n) + ' stands. Visite, responda e colete!';
+  if (n === total) document.getElementById('prize-box').classList.add('show');
+  buildStampsMini();
+  buildStandsGrid();
+  updateRanking();
+}
+
+/* ── OPEN STAND MODAL ── */
+function openStand(id) {
+  const s = STANDS.find(x => x.id === id);
+  currentStand = id;
+  quizDone = collected.has(id);
+  document.getElementById('m-tag').innerHTML = `<div class="sc-tag tag-${s.tag}" style="margin-bottom:6px">${s.tagLabel}</div>`;
+  document.getElementById('m-title').textContent = s.icon + ' ' + s.name;
+  const done = collected.has(id);
+  document.getElementById('m-body').innerHTML = `
+    <div class="m-section">
+      <div class="m-label">Sobre este stand</div>
+      <div class="m-text">${s.desc}</div>
+    </div>
+    <div class="m-section">
+      <div class="m-label">Quiz — responda e ganhe o stamp!</div>
+      <div class="m-text" style="font-weight:600;margin-bottom:10px">${s.quiz.q}</div>
+      ${s.quiz.opts.map((o,i)=>`<div class="q-opt ${done&&i===s.quiz.c?'selected-c':''}" id="qo${i}" onclick="answerQ(${i})">${o}</div>`).join('')}
+      <div id="qfb" class="${done?'q-feedback ok':''}" style="${done?'':'display:none'}">${done?'✓ Já coletado! '+s.quiz.exp:''}</div>
+    </div>
+    <div class="m-section">
+      <div class="m-label">Sorteio deste stand</div>
+      <div class="m-text">🎁 ${s.sorteio}</div>
+    </div>
+    <button class="coll-btn" id="coll-btn" ${done?'disabled':''} onclick="collectStamp()">${done?'✓ Stamp coletado!':'Coletar stamp'}</button>
+    <a class="ask-link" onclick="goAsk('${s.name}')">Tenho uma dúvida sobre ${s.name} →</a>`;
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function answerQ(idx) {
+  if (quizDone) return;
+  const s = STANDS.find(x => x.id === currentStand);
+  quizDone = true;
+  for (let i = 0; i < s.quiz.opts.length; i++) {
+    const el = document.getElementById('qo' + i);
+    if (i === s.quiz.c) el.classList.add('selected-c');
+    else if (i === idx && idx !== s.quiz.c) el.classList.add('selected-w');
+  }
+  const fb = document.getElementById('qfb');
+  fb.style.display = 'block';
+  if (idx === s.quiz.c) {
+    fb.className = 'q-feedback ok';
+    fb.textContent = '✓ Correto! ' + s.quiz.exp;
+  } else {
+    fb.className = 'q-feedback err';
+    fb.textContent = 'Quase! Correto: "' + s.quiz.opts[s.quiz.c] + '". ' + s.quiz.exp;
+  }
+  document.getElementById('coll-btn').disabled = false;
+}
+
+function collectStamp() {
+  if (collected.has(currentStand)) return;
+  const s = STANDS.find(x => x.id === currentStand);
+  collected.add(currentStand);
+  saveState();
+  updateProgress();
+  logToSheets('stamp', {stand: s.name, stand_id: currentStand});
+  toast('Stamp ' + s.icon + ' coletado!');
+  const btn = document.getElementById('coll-btn');
+  if (btn) { btn.textContent = '✓ Stamp coletado!'; btn.disabled = true; }
+}
+
+/* ── PERGUNTAS ── */
+function enviarPergunta() {
+  const par = document.getElementById('p-sel').value;
+  const txt = document.getElementById('p-area').value.trim();
+  if (!par || !txt) { toast('Selecione o parceiro e escreva a dúvida!'); return; }
+  const q = { parceiro: par, texto: txt, status: 'pendente', ts: new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) };
+  questions.unshift(q);
+  saveState();
+  logToSheets('pergunta', {parceiro: par, pergunta: txt});
+  renderQuestions();
+  document.getElementById('p-area').value = '';
+  toast('Pergunta enviada! Resposta em breve 👍');
+}
+
+function renderQuestions() {
+  const el = document.getElementById('q-list');
+  if (!questions.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--muted)">Nenhuma pergunta ainda. Seja o primeiro!</div>';
+    return;
+  }
+  el.innerHTML = questions.map(q => `
+    <div class="q-item">
+      <div class="q-meta">
+        <span>${q.parceiro}</span>
+        <span style="font-size:11px;color:var(--muted)">${q.ts||''}</span>
+        <span class="q-badge badge-${q.status}">${q.status}</span>
+      </div>
+      <div>${q.texto}</div>
+      ${q.resposta?`<div class="q-answer">💬 ${q.resposta}</div>`:''}
+    </div>`).join('');
+}
+
+function goAsk(nome) {
+  closeModal();
+  showTab('perguntas');
+  const sel = document.getElementById('p-sel');
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].text.startsWith(nome.split(' ')[0])) { sel.selectedIndex = i; break; }
+  }
+  document.getElementById('p-area').focus();
+}
+
+/* ── RANKING ── */
+function updateRanking() {
+  const meIdx = fakeRank.findIndex(r => r.isMe);
+  if (meIdx >= 0) fakeRank[meIdx].s = collected.size;
+  else fakeRank.push({n: USER ? USER.nome.split(' ')[0] : 'Você', s: collected.size, av: USER ? USER.nome.split(' ').map(x=>x[0]).join('').substring(0,2).toUpperCase() : 'VO', isMe: true});
+  const sorted = [...fakeRank].sort((a,b)=>b.s-a.s);
+  const max = sorted[0].s || 1;
+  document.getElementById('rank-list').innerHTML = sorted.map((r,i) => `
+    <div class="rank-row">
+      <div class="rank-pos">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+      <div class="rank-av ${r.isMe?'me':''}">${r.av}</div>
+      <div class="rank-name ${r.isMe?'me':''}">${r.n}${r.isMe?' (você)':''}</div>
+      <div class="rank-st">${r.s} stamps</div>
+      <div class="rank-bar-w"><div class="rank-bar-f" style="width:${Math.round(r.s/max*100)}%"></div></div>
+    </div>`).join('');
+}
+
+/* ── TABS ── */
+function showTab(t) {
+  document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(tab=>tab.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.querySelectorAll('.tab').forEach(tab => {
+    if (tab.getAttribute('onclick').includes("'"+t+"'")) tab.classList.add('active');
+  });
+}
+
+/* ── MODAL ── */
+function closeMBg(e) { if (e.target === document.getElementById('modal-bg')) closeModal(); }
+function closeModal() { document.getElementById('modal-bg').classList.remove('open'); }
+
+/* ── TOAST ── */
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
